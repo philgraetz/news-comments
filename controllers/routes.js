@@ -45,8 +45,10 @@ module.exports = function(app) {
         let savedDate = 0;
         let comments = [];
 
+        console.log("Scraping URL " + SCRAPE_URL);
         request(SCRAPE_URL, function(error, response, html) {
             if (error) {
+                console.log(error);
                 return res.send(error);
             }
             let articles = [];
