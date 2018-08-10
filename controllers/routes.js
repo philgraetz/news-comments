@@ -3,11 +3,19 @@ let cheerio = require('cheerio');
 let mongoose = require("mongoose");
 
 let db = require("../models");
-mongoose.connect("mongodb://localhost/news_db");
 
 const SCRAPE_URL = "https://minnesota.cbslocal.com/";
 
 const helpers = require("../views/hbs-helpers");
+
+// === Connect to mongodb =======================================
+// If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/news_db";
+
+// Set mongoose to leverage built in JavaScript ES6 Promises
+// Connect to the Mongo DB
+mongoose.Promise = Promise;
+mongoose.connect(MONGODB_URI);
 
 // === routes ==================================================
 module.exports = function(app) {
