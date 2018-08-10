@@ -1,4 +1,5 @@
 let request = require('request');
+var axios = require("axios");
 let cheerio = require('cheerio');
 let mongoose = require("mongoose");
 
@@ -46,13 +47,18 @@ module.exports = function(app) {
         let comments = [];
 
         console.log("Scraping URL " + SCRAPE_URL);
-        request(SCRAPE_URL, function(error, response, html) {
-            if (error) {
-                console.log(error);
-                return res.send(error);
-            }
+
+        // request(SCRAPE_URL, function(error, response, html) {
+        axios.get(SCRAPE_URL)
+        .then(function(response) {
+            console.log("returned from URL " + SCRAPE_URL);
+            // console.log(response.data);
+            // if (error) {
+            //     console.log(error);
+            //     return res.send(error);
+            // }
             let articles = [];
-            let $ = cheerio.load(html);
+            let $ = cheerio.load(response.data);
             $(".cbs-thumbnail-link").each(function(i, elt) {
                 let url     = $(elt).attr("href");
                 let wrapper = url ? $(elt).children(".title-wrapper") : null;
@@ -78,6 +84,9 @@ module.exports = function(app) {
                 loggedInAs: loggedInAs,
             };
             checkDBForArticles(articles, 0, res, renderData);
+        })
+        .catch(function(error) {
+            console.log(error);
         });
     });
 
