@@ -1,0 +1,161 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">News Comments</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav mr-auto">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            What to Display
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            <a class="dropdown-item" href="/saved-articles" id="saved-articles-menu">Saved Articles</a>
+            <a class="dropdown-item" href="/new-articles" id="new-articles-menu">Current Articles</a>
+            <a class="dropdown-item" href="#">Articles You Saved</a>
+            <a class="dropdown-item" href="#">Articles With Your Comments</a>
+            </div>
+        </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0 d-none" id="logged-in-as-form">
+            <span class="navbar-text px-2" id="logged-in-as-span"></span>
+            <button class="btn btn-sm btn-outline-primary my-2 my-sm-0" type="button" id="logout-button">Logout</button>
+        </form>
+        <!-- Button to trigger modal -->
+        <button type="button" class="btn btn-sm btn-outline-primary my-2 my-sm-0 d-none" 
+                data-toggle="modal" data-target="#login-modal" id="login-modal-button">
+            Login
+        </button>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <h4 class="text-center">{{@pageHeading}}</h4>
+        </div>
+    </div>
+
+    {{!-- For Each Article --}}
+    {{#each articles}}
+    <div class="jumbotron jumbotron-fluid p-1 my-1">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-4">
+                    <img src="{{image}}" alt="News Story Image" style="max-width:100%">
+                </div>
+
+                <div class="col-sm-8">
+                    {{!-- Heading --}}
+                    <h5 class="display-5 px-2">{{heading}}</h5>
+
+                    {{!-- Summary --}}
+                    <div class="px-2">{{summary}}</div>
+
+                    {{!-- URL --}}
+                    <div class="px-2 pb-1">
+                        <a href="{{url}}" target="_blank">{{url}}</a>
+                    </div>
+
+                    {{!-- Buttons and 'Saved by' --}}
+                    <div class="px-2 d-flex">
+                        <button type="button"
+                                class="btn btn-sm btn-primary mr-2 save-article-button {{disableSave isSaved @loggedInAs}}" 
+                                data-heading="{{heading}}"
+                                data-summary="{{summary}}"
+                                data-url="{{url}}"
+                                data-image="{{image}}"
+                                id="save-{{removeSpaces heading}}">
+                            Save
+                        </button>
+
+                        <button type="button" 
+                                class="btn btn-sm btn-primary mr-2 delete-article-button {{disableIfNotYou savedBy @loggedInAs}}" 
+                                data-heading="{{heading}}"
+                                id="delete-{{removeSpaces heading}}">
+                            Delete
+                        </button>
+
+                        <button type="button"
+                                class="btn btn-sm btn-primary mr-2 add-comment-button {{enableSave isSaved}}"
+                                data-article-id="{{_id}}"
+                                id="add-comment-{{removeSpaces heading}}">
+                            Add Comment
+                        </button>
+
+                        <span class="ml-auto {{disableIfNotSaved isSaved}}" id="saved-by-{{removeSpaces heading}}">
+                            Saved by <em>{{savedBy}}</em> on {{dateString savedDate}}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="input-group mb-1 d-none" id="comment-group-{{_id}}">
+                        <input type="input" class="form-control" id="comment-input-{{_id}}" placeholder="Add comment here">
+                        <div class="input-group-append p-2 w-25">
+                            <button class="btn btn-sm btm-primary comment-submit-button" id="comment-submit-{{_id}}"
+                                    data-article-id="{{_id}}">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    {{!-- For Each comment (for this Article) --}}
+                    {{#each comments}}
+                    <div class="m-2 bg-white">
+                        <div class="d-flex">
+                            <span class="px-2"><em>{{by}}</em></span>
+                            <span class="px-2 ml-auto">{{date}}</span>
+                        </div>
+                        <div class="px-2">{{text}}</div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/each}}
+</div>
+
+{{!-- Login Modal --}}
+<div id="login-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            {{!-- modal header --}}
+            <div class="modal-header">
+                <h5 class="modal-title">Login</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            {{!-- modal body --}}
+            <form id="login-form">
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend p-2 w-25">
+                        <label for="username-login">Username:</label>
+                    </div>
+                    <input type="text" class="form-control" id="username-login" placeholder="Enter username">
+                </div>
+                <div class="input-group mb-1">
+                    <div class="input-group-prepend p-2 w-25">
+                        <label for="userpass-login">Password:</label>
+                    </div>
+                    <input type="password" class="form-control" id="userpass-login" placeholder="Password">
+                </div>
+
+                {{!-- modal footer --}}
+                <div class="modal-footer">
+                    <button type="submit" id="login-submit" class="btn btn-primary">Log In</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
